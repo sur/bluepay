@@ -33,7 +33,7 @@ class BluePay
   # account: Customer's checking or savings account number
   # doc_type: WEB, TEL, ARC, etc -- see docs.  Optional.
   # REMEMBER: Ach requires some other fields,
-  # such as address and phone 
+  # such as address and phone
   def set_ach_information(params = {})
     @PARAM_HASH['PAYMENT_TYPE'] = 'ACH'
     @PARAM_HASH['ACH_ROUTING'] = params[:ach_routing]
@@ -57,7 +57,7 @@ class BluePay
     @PARAM_HASH['RRNO'] = params[:trans_id] || ''
     @api = "bp10emu"
   end
-  
+
   # Capture an Auth
   def capture(trans_id, amount='')
     @PARAM_HASH['TRANSACTION_TYPE'] = 'CAPTURE'
@@ -71,6 +71,7 @@ class BluePay
     @PARAM_HASH['TRANSACTION_TYPE'] = 'REFUND'
     @PARAM_HASH['RRNO'] = params[:trans_id]
     @PARAM_HASH['AMOUNT'] = params[:amount] || ''
+    @PARAM_HASH['DOC_TYPE'] = params[:doc_type] || ''
     @api = "bp10emu"
   end
 
@@ -93,7 +94,7 @@ class BluePay
   # Sets payment information for a swiped credit card transaction
   def swipe(track_data)
     @PARAM_HASH['SWIPE'] = track_data
-    #  Regex matchers 
+    #  Regex matchers
       # track1_and_track2 = /(%B)\d{0,19}\^([\w\s]*)\/([\w\s]*)([\s]*)\^\d{7}\w*\?;\d{0,19}=\d{7}\w*\?/.match(track_data).to_s
       # track2 = /;\d{0,19}=\d{7}\w*\?/.match(track_data).to_s
   end
@@ -208,7 +209,7 @@ class BluePay
   # For Canadian and AMEX processors, ensure required Level 2 information is present.
   def add_line_item(params)
     # Creates line items counter necessary for prefix.
-    @LINE_ITEMS = 0 if !@LINE_ITEMS                                                              
+    @LINE_ITEMS = 0 if !@LINE_ITEMS
     @LINE_ITEMS += 1                                                              #  VALUE REQUIRED IN:
     prefix = "LV3_ITEM#{@LINE_ITEMS}_"                                            #  USA | CANADA
     @PARAM_HASH[prefix + 'UNIT_COST'] = params[:unit_cost]                        #   *      *
@@ -216,12 +217,12 @@ class BluePay
     @PARAM_HASH[prefix + 'ITEM_SKU'] = params[:item_sku] || ''                    #          *
     @PARAM_HASH[prefix + 'ITEM_DESCRIPTOR'] = params[:descriptor] || ''           #   *      *
     @PARAM_HASH[prefix + 'COMMODITY_CODE'] = params[:commodity_code] || ''        #   *      *
-    @PARAM_HASH[prefix + 'PRODUCT_CODE'] = params[:product_code] || ''            #   *    
+    @PARAM_HASH[prefix + 'PRODUCT_CODE'] = params[:product_code] || ''            #   *
     @PARAM_HASH[prefix + 'MEASURE_UNITS'] = params[:measure_units] || ''          #   *      *
     @PARAM_HASH[prefix + 'ITEM_DISCOUNT'] = params[:item_discount] || ''          #          *
-    @PARAM_HASH[prefix + 'TAX_RATE'] = params[:tax_rate] || ''                    #   *    
+    @PARAM_HASH[prefix + 'TAX_RATE'] = params[:tax_rate] || ''                    #   *
     @PARAM_HASH[prefix + 'GOODS_TAX_RATE'] = params[:goods_tax_rate] || ''        #          *
-    @PARAM_HASH[prefix + 'TAX_AMOUNT'] = params[:tax_amount] || ''                #   *    
+    @PARAM_HASH[prefix + 'TAX_AMOUNT'] = params[:tax_amount] || ''                #   *
     @PARAM_HASH[prefix + 'GOODS_TAX_AMOUNT'] = params[:goods_tax_amount] || ''    #          *
     @PARAM_HASH[prefix + 'CITY_TAX_RATE'] = params[:city_tax_rate] || ''          #
     @PARAM_HASH[prefix + 'CITY_TAX_AMOUNT'] = params[:city_tax_amount] || ''      #
@@ -235,7 +236,7 @@ class BluePay
     @PARAM_HASH[prefix + 'GL_ACCOUNT_NUMBER'] = params[:gl_account_number] || ''  #
     @PARAM_HASH[prefix + 'DIVISION_NUMBER'] = params[:division_number] || ''      #
     @PARAM_HASH[prefix + 'PO_LINE_NUMBER'] = params[:po_line_number] || ''        #
-    @PARAM_HASH[prefix + 'LINE_ITEM_TOTAL'] = params[:line_item_total] || ''      #   *     
+    @PARAM_HASH[prefix + 'LINE_ITEM_TOTAL'] = params[:line_item_total] || ''      #   *
   end
 
   # Set fields for a recurring payment
@@ -275,7 +276,7 @@ class BluePay
     @api = "bp20rebadmin"
   end
 
-  # Updates an existing rebilling cycle's payment information.   
+  # Updates an existing rebilling cycle's payment information.
   def update_rebilling_payment_information(template_id)
     @PARAM_HASH["TEMPLATE_ID"] = template_id
   end
@@ -308,7 +309,7 @@ class BluePay
     @PARAM_HASH["REPORT_END_DATE"] = params[:report_end_date]
     @PARAM_HASH["id"] = params[:transaction_id]
     @PARAM_HASH["EXCLUDE_ERRORS"] = params[:exclude_errors] || ''
-    @api = "stq"    
+    @api = "stq"
   end
 
   # Queries by a specific Transaction ID. To be used with get_single_trans_query
@@ -337,7 +338,7 @@ class BluePay
   end
 
   # Queries by a specific Last Name. To be used with get_single_trans_query
-  def query_by_name2(name2) 
+  def query_by_name2(name2)
     @PARAM_HASH["name2"] = name2
   end
 
@@ -351,8 +352,8 @@ class BluePay
   # protect_amount: Yes/No -- Should the amount be protected from changes by the tamperproof seal?
   # rebilling: Yes/No -- Should a recurring transaction be set up?
   # paymentTemplate: Select one of our payment form template IDs or your own customized template ID. If the customer should not be allowed to change the amount, add a 'D' to the end of the template ID. Example: 'mobileform01D'
-      # mobileform01 -- Credit Card Only - White Vertical (mobile capable) 
-      # default1v5 -- Credit Card Only - Gray Horizontal 
+      # mobileform01 -- Credit Card Only - White Vertical (mobile capable)
+      # default1v5 -- Credit Card Only - Gray Horizontal
       # default7v5 -- Credit Card Only - Gray Horizontal Donation
       # default7v5R -- Credit Card Only - Gray Horizontal Donation with Recurring
       # default3v4 -- Credit Card Only - Blue Vertical with card swipe
@@ -374,30 +375,30 @@ class BluePay
   # reb_amount: Amount that will be charged when a recurring transaction occurs.
   # reb_cycles: Number of times that the recurring transaction should occur. Not set if recurring transactions should continue until canceled.
   # reb_start_date: Date (yyyy-mm-dd) or period (x units) until the first recurring transaction should occur. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 2016-04-01 or 1 MONTH)
-  # reb_frequency: How often the recurring transaction should occur. Format is 'X UNITS'. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 1 MONTH) 
+  # reb_frequency: How often the recurring transaction should occur. Format is 'X UNITS'. Possible units are DAY, DAYS, WEEK, WEEKS, MONTH, MONTHS, YEAR or YEARS. (ex. 1 MONTH)
   # custom_id: A merchant defined custom ID value.
   # protect_custom_id: Yes/No -- Should the Custom ID value be protected from change using the tamperproof seal?
   # custom_id2: A merchant defined custom ID 2 value.
   # protect_custom_id2: Yes/No -- Should the Custom ID 2 value be protected from change using the tamperproof seal?
-   
+
   def generate_url(params={})
-    @PARAM_HASH['DBA'] = params[:merchant_name] 
-    @PARAM_HASH['RETURN_URL'] = params[:return_url]  
-    @PARAM_HASH['TRANSACTION_TYPE'] = params[:transaction_type]  
+    @PARAM_HASH['DBA'] = params[:merchant_name]
+    @PARAM_HASH['RETURN_URL'] = params[:return_url]
+    @PARAM_HASH['TRANSACTION_TYPE'] = params[:transaction_type]
     @PARAM_HASH['DISCOVER_IMAGE'] = params[:accept_discover].start_with?("y","Y") ? "discvr.gif" : "spacer.gif"
     @PARAM_HASH['AMEX_IMAGE'] = params[:accept_amex].start_with?("y","Y") ? "amex.gif" : "spacer.gif"
-    @PARAM_HASH['AMOUNT'] = params[:amount] || '' 
-    @PARAM_HASH['PROTECT_AMOUNT'] = params[:protect_amount] || "No" 
+    @PARAM_HASH['AMOUNT'] = params[:amount] || ''
+    @PARAM_HASH['PROTECT_AMOUNT'] = params[:protect_amount] || "No"
     @PARAM_HASH['REBILLING'] = params[:rebilling].start_with?("y","Y") ? "1" : "0"
-    @PARAM_HASH['REB_PROTECT'] = params[:reb_protect] || 'Yes' 
-    @PARAM_HASH['REB_AMOUNT'] = params[:reb_amount] || '' 
-    @PARAM_HASH['REB_CYCLES'] = params[:reb_cycles] || '' 
-    @PARAM_HASH['REB_FIRST_DATE'] = params[:reb_start_date] || ''  
-    @PARAM_HASH['REB_EXPR'] = params[:reb_frequency] || '' 
-    @PARAM_HASH['CUSTOM_ID'] = params[:custom_id] || ''  
+    @PARAM_HASH['REB_PROTECT'] = params[:reb_protect] || 'Yes'
+    @PARAM_HASH['REB_AMOUNT'] = params[:reb_amount] || ''
+    @PARAM_HASH['REB_CYCLES'] = params[:reb_cycles] || ''
+    @PARAM_HASH['REB_FIRST_DATE'] = params[:reb_start_date] || ''
+    @PARAM_HASH['REB_EXPR'] = params[:reb_frequency] || ''
+    @PARAM_HASH['CUSTOM_ID'] = params[:custom_id] || ''
     @PARAM_HASH['PROTECT_CUSTOM_ID'] = params[:protect_custom_id] || "No"
-    @PARAM_HASH['CUSTOM_ID2'] = params[:custom_id2] || ''  
-    @PARAM_HASH['PROTECT_CUSTOM_ID2'] = params[:protect_custom_id2] || "No" 
+    @PARAM_HASH['CUSTOM_ID2'] = params[:custom_id2] || ''
+    @PARAM_HASH['PROTECT_CUSTOM_ID2'] = params[:protect_custom_id2] || "No"
     @PARAM_HASH['SHPF_FORM_ID'] = params[:payment_template] || "mobileform01"
     @PARAM_HASH['RECEIPT_FORM_ID'] = params[:receipt_template] || "mobileresult01"
     @PARAM_HASH['REMOTE_URL'] = params[:receipt_temp_remote_url] || ''
@@ -428,17 +429,17 @@ class BluePay
     credit_cards = 'vi-mc'
     credit_cards.concat('-di') if @PARAM_HASH['DISCOVER_IMAGE'] == 'discvr.gif'
     credit_cards.concat('-am') if @PARAM_HASH['AMEX_IMAGE'] == 'amex.gif'
-    return credit_cards 
+    return credit_cards
   end
 
   # Sets the receipt Tamperproof Seal string. Must be used with generate_url.
   def set_receipt_tps_string
-    [@ACCOUNT_ID, 
-    @PARAM_HASH['RECEIPT_FORM_ID'], 
-    @PARAM_HASH['RETURN_URL'], 
-    @PARAM_HASH['DBA'], 
-    @PARAM_HASH['AMEX_IMAGE'], 
-    @PARAM_HASH['DISCOVER_IMAGE'], 
+    [@ACCOUNT_ID,
+    @PARAM_HASH['RECEIPT_FORM_ID'],
+    @PARAM_HASH['RETURN_URL'],
+    @PARAM_HASH['DBA'],
+    @PARAM_HASH['AMEX_IMAGE'],
+    @PARAM_HASH['DISCOVER_IMAGE'],
     @receipt_tps_def,
     @PARAM_HASH['RECEIPT_TPS_HASH_TYPE']].join('')
   end
@@ -458,15 +459,15 @@ class BluePay
   end
 
   # Sets the Simple Hosted Payment Form string that will be used to create a Tamperproof Seal. Must be used with generate_url.
-  def set_shpf_tps_string 
-    shpf = ([@PARAM_HASH['SHPF_FORM_ID'], 
-    @ACCOUNT_ID, 
-    @PARAM_HASH['DBA'], 
-    @bp10emu_tamper_proof_seal, 
-    @PARAM_HASH['AMEX_IMAGE'], 
-    @PARAM_HASH['DISCOVER_IMAGE'], 
+  def set_shpf_tps_string
+    shpf = ([@PARAM_HASH['SHPF_FORM_ID'],
+    @ACCOUNT_ID,
+    @PARAM_HASH['DBA'],
+    @bp10emu_tamper_proof_seal,
+    @PARAM_HASH['AMEX_IMAGE'],
+    @PARAM_HASH['DISCOVER_IMAGE'],
     @bp10emu_tps_def,
-    @PARAM_HASH['TPS_HASH_TYPE'], 
+    @PARAM_HASH['TPS_HASH_TYPE'],
     @shpf_tps_def,
     @PARAM_HASH['SHPF_TPS_HASH_TYPE']].join(''))
     return add_string_protected_status(shpf)
@@ -477,14 +478,14 @@ class BluePay
     if @PARAM_HASH['RECEIPT_FORM_ID']== 'remote_url'
       return @PARAM_HASH['REMOTE_URL']
     else
-      return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' + @PARAM_HASH['RECEIPT_FORM_ID'] + 
-      '&SHPF_ACCOUNT_ID='     + @ACCOUNT_ID + 
-      '&SHPF_TPS_DEF='        + url_encode(@receipt_tps_def) + 
+      return 'https://secure.bluepay.com/interfaces/shpf?SHPF_FORM_ID=' + @PARAM_HASH['RECEIPT_FORM_ID'] +
+      '&SHPF_ACCOUNT_ID='     + @ACCOUNT_ID +
+      '&SHPF_TPS_DEF='        + url_encode(@receipt_tps_def) +
       '&SHPF_TPS_HASH_TYPE='  + url_encode(@PARAM_HASH['RECEIPT_TPS_HASH_TYPE']) +
-      '&SHPF_TPS='            + url_encode(@receipt_tamper_proof_seal) + 
-      '&RETURN_URL='          + url_encode(@PARAM_HASH['RETURN_URL']) + 
-      '&DBA='                 + url_encode(@PARAM_HASH['DBA']) + 
-      '&AMEX_IMAGE='          + url_encode(@PARAM_HASH['AMEX_IMAGE']) + 
+      '&SHPF_TPS='            + url_encode(@receipt_tamper_proof_seal) +
+      '&RETURN_URL='          + url_encode(@PARAM_HASH['RETURN_URL']) +
+      '&DBA='                 + url_encode(@PARAM_HASH['DBA']) +
+      '&AMEX_IMAGE='          + url_encode(@PARAM_HASH['AMEX_IMAGE']) +
       '&DISCOVER_IMAGE='      + url_encode(@PARAM_HASH['DISCOVER_IMAGE'])
     end
   end
@@ -495,20 +496,20 @@ class BluePay
     string.concat(' REBILLING REB_CYCLES REB_AMOUNT REB_EXPR REB_FIRST_DATE') if @PARAM_HASH['REB_PROTECT'] == 'Yes'
     string.concat(' CUSTOM_ID') if @PARAM_HASH['PROTECT_CUSTOM_ID'] == 'Yes'
     string.concat(' CUSTOM_ID2') if @PARAM_HASH['PROTECT_CUSTOM_ID2'] == 'Yes'
-    return string 
+    return string
   end
-  
+
   # Adds optional protected values to a string. Must be used with generate_url.
   def add_string_protected_status(string)
     string.concat(@PARAM_HASH['AMOUNT']) if @PARAM_HASH['PROTECT_AMOUNT'] == 'Yes'
     string.concat([@PARAM_HASH['REBILLING'], @PARAM_HASH['REB_CYCLES'], @PARAM_HASH['REB_AMOUNT'], @PARAM_HASH['REB_EXPR'], @PARAM_HASH['REB_FIRST_DATE']].join('')) if @PARAM_HASH['REB_PROTECT'] == 'Yes'
     string.concat(@PARAM_HASH['CUSTOM_ID']) if @PARAM_HASH['PROTECT_CUSTOM_ID'] == 'Yes'
     string.concat(@PARAM_HASH['CUSTOM_ID2']) if @PARAM_HASH['PROTECT_CUSTOM_ID2'] == 'Yes'
-    return string 
+    return string
   end
 
   # Encodes a string into a URL. Must be used with generate_url.
-  def url_encode(string) 
+  def url_encode(string)
     encoded_string = ''
     string.each_char do |char|
       char = ("%%%02X" % char.ord) if char.match(/[A-Za-z0-9]/) == nil
