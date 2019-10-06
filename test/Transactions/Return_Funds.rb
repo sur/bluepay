@@ -57,8 +57,7 @@ if payment.successful_transaction?
   # Creates a refund transaction against previous sale
   payment_return.refund(
     trans_id: payment.get_trans_id, # id of previous transaction to refund
-    amount: "1.75", # partial refund of $1.75
-    doc_type: "CCD" # company signed agreement doc
+    amount: "1.75" # partial refund of $1.75
   )
 
   # Makes the API Request to process refund

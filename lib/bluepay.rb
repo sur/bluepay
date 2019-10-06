@@ -47,6 +47,8 @@ class BluePay
     @PARAM_HASH['TRANSACTION_TYPE'] = 'SALE'
     @PARAM_HASH['AMOUNT'] = params[:amount]
     @PARAM_HASH['RRNO'] = params[:trans_id] || ''
+    @PARAM_HASH['PAYMENT_TYPE'] = params[:payment_type] || ''
+    @PARAM_HASH['DOC_TYPE'] = params[:doc_type] || ''
     @api = "bp10emu"
   end
 
@@ -71,7 +73,6 @@ class BluePay
     @PARAM_HASH['TRANSACTION_TYPE'] = 'REFUND'
     @PARAM_HASH['RRNO'] = params[:trans_id]
     @PARAM_HASH['AMOUNT'] = params[:amount] || ''
-    @PARAM_HASH['DOC_TYPE'] = params[:doc_type] || ''
     @api = "bp10emu"
   end
 
